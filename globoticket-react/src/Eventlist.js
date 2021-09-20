@@ -1,19 +1,19 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useQuery } from "react-query";
+import { getEvents } from "./EventHelper";
 import Eventitem from "./Eventitem";
-
 export default function Eventlist() {
-  const [events, setEvents] = useState([]);
+  const { isLoading, data } = useQuery("events", () => getEvents());
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3333/events")
-
-      .then((response) => {
-        setEvents(response.data);
-      });
-  }, []);
-
+  if (isLoading) {
+    return (
+      <div className="text-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only"></span>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="container" id="eventtable">
       <div className="container">
@@ -29,7 +29,7 @@ export default function Eventlist() {
             </tr>
           </thead>
           <tbody>
-            {events.map((event) => (
+            {data.data.map((event) => (
               <Eventitem event={event} key={event.id} />
             ))}
           </tbody>
