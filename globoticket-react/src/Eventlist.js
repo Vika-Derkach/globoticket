@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { getEvents } from "./EventHelper";
 import Eventitem from "./Eventitem";
 export default function Eventlist() {
-  const { isLoading, data } = useQuery("events", () => getEvents());
+  const [page, setPage] = useState(1);
+  const { isLoading, data } = useQuery(["events", page], () => getEvents(page));
 
   if (isLoading) {
     return (
@@ -14,6 +15,7 @@ export default function Eventlist() {
       </div>
     );
   }
+  console.log("data", data);
   return (
     <div className="container" id="eventtable">
       <div className="container">
@@ -29,10 +31,32 @@ export default function Eventlist() {
             </tr>
           </thead>
           <tbody>
-            {data.data.map((event) => (
+            {data.data.rows.map((event) => (
               <Eventitem event={event} key={event.id} />
             ))}
           </tbody>
+          <tfoot>
+            <tr>
+              <th colSpan="3" className="text-center">
+                <button
+                  className="btn btn-primary btn-primary-themed btn-md font-upper"
+                  disabled={page === 1}
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                >
+                  Previous
+                </button>
+              </th>
+              <th colSpan="3">
+                <button
+                  className="btn btn-primary btn-primary-themed btn-md font-upper"
+                  disabled={!data.data.hasMore}
+                  onClick={() => setPage(page + 1)}
+                >
+                  Next
+                </button>
+              </th>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
