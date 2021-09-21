@@ -1,40 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import { clearCart } from "./CartHelper";
-import CartStore from "./CartStore";
 import Shoppingcartitem from "./Shoppingcartitem";
-
+import { useCart } from "./SwrHelper";
 export default function Shoppingcart() {
   const history = useHistory();
-
-  const [cart, setCart] = useState([]);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const dispatch = useDispatch();
-  let updateCart = () => {
-    const state = CartStore.getState();
-    if (state) {
-      const cart = state.cart;
-      const totalAmount = state.cart.reduce(
-        (p, n) => p + n.quantity * n.price,
-        0
-      );
-      setCart(cart);
-      setTotalAmount(totalAmount);
-    }
-  };
+  const { cart, isLoading } = useCart();
 
   let handleOrderClick = () => {
-    dispatch(clearCart());
+    clearCart();
     history.push("/confirm");
   };
-
-  useEffect(() => {
-    updateCart();
-    CartStore.subscribe(() => {
-      updateCart();
-    });
-  }, []);
 
   return (
     <div className="container" id="carttable">
@@ -62,7 +38,10 @@ export default function Shoppingcart() {
                 onClick={handleOrderClick}
                 className="btn btn-primary btn-primary-themed btn-md font-upper"
               >
-                Order for ${totalAmount}
+                Order for $
+                {!isLoading && cart
+                  ? cart.reduce((p, n) => p + n.quantity * n.price, 0)
+                  : 0}
               </button>
             </td>
           </tr>
