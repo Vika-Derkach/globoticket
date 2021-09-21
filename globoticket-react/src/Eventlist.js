@@ -5,19 +5,13 @@ import Eventitem from "./Eventitem";
 import { fetcher } from "./SwrHelper";
 export default function Eventlist() {
   const dispatch = useDispatch();
-  const { data, error } = useSWR("http://localhost:3333/events", fetcher);
+  const { data, error } = useSWR("http://localhost:3333/events", fetcher, {
+    suspense: true,
+  });
   if (error) {
     throw error;
   }
-  if (!data) {
-    return (
-      <div className="text-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only"></span>
-        </div>
-      </div>
-    );
-  }
+
   console.log(data);
   console.log("data", data);
   return (
