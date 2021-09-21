@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import useSWR from "swr";
 import Eventitem from "./Eventitem";
 import { fetcher } from "./SwrHelper";
 export default function Eventlist() {
-  const { data } = useSWR("http://localhost:3333/events", fetcher);
-
+  const dispatch = useDispatch();
+  const { data, error } = useSWR("http://localhost:3333/events", fetcher);
+  useEffect(() => {
+    if (error) {
+      dispatch({ type: "ERROR_SET", error: error });
+    }
+  }, [error]);
   if (!data) {
     return (
       <div className="text-center">
